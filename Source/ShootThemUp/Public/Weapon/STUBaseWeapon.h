@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "STUCoreTypes.h"
 #include "STUBaseWeapon.generated.h"
 
 class USkeletalMeshComponent;
@@ -16,39 +17,45 @@ class SHOOTTHEMUP_API ASTUBaseWeapon : public AActor
 public:
     ASTUBaseWeapon();
 
+    FOnClipEmptySignature OnClipEmpty;
+
     virtual void StartFire();
     virtual void StopFire();
 
+    void ChangeClip();
+    bool CanReload() const;
+
 protected:
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Components")
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Components")
     USkeletalMeshComponent* WeaponMesh;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     FName MuzzleSocketName = "MuzzleSocket";
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     float TraceMaxDistance = 1500.0f;
 
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    float DamageAmount = 10.0f;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    float TimeBetweenShots = 0.1f;
-
-    UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    float BulletSpread = 1.5f;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    FAmmoData DefaultAmmo{15, 10, false};
 
     virtual void BeginPlay() override;
 
-    void MakeShot();
+    virtual void MakeShot();
+    virtual bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
+
     APlayerController* GetPlayerController() const;
     bool GetPlayerViewPoint(FVector& ViewLocation, FRotator& ViewRotation) const;
     FVector GetMuzzleWorldLocation() const;
-    bool GetTraceData(FVector& TraceStart, FVector& TraceEnd) const;
+
     void MakeHit(FHitResult& HitResult, const FVector& TraceStart, const FVector& TraceEnd);
-    void MakeDamage(const FHitResult& HitResult);
+
+    
+    void DecreaseAmmo();
+
+    void LogAmmo();
+    bool IsAmmoEmpty() const;
+    bool IsClipEmpty() const;
 
 private:
-    FTimerHandle ShotTimerHandle;
-
+    FAmmoData CurrentAmmo;
 };
