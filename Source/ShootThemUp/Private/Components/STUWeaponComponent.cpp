@@ -1,4 +1,4 @@
-// Shoot Them Up Game
+﻿// Shoot Them Up Game
 
 #include "Components/STUWeaponComponent.h"
 #include "Weapon/STUBaseWeapon.h"
@@ -53,7 +53,7 @@ void USTUWeaponComponent::SpawnWeapons()
         if (!Weapon)
             continue;
 
-        Weapon->OnClipEmpty.AddUObject(this, &USTUWeaponComponent::OnEmptyClip);
+        Weapon->OnClipEmpty.AddUObject(this, &USTUWeaponComponent::OnClipEmpty);
         Weapon->SetOwner(Character);
         Weapons.Add(Weapon);
 
@@ -93,8 +93,7 @@ void USTUWeaponComponent::EquipWeapon(int32 WeaponIndex)
     }
 
     ACharacter* Character = Cast<ACharacter>(GetOwner());
-    if (!Character)
-        return;
+    if (!Character) return;
 
     if (CurrentWeapon)
     {
@@ -117,8 +116,11 @@ void USTUWeaponComponent::NextWeapon()
 {
     if (!CanEquip())
         return;
-    CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
-    EquipWeapon(CurrentWeaponIndex);
+    if (Weapons.Num() != 0)
+    {
+        CurrentWeaponIndex = (CurrentWeaponIndex + 1) % Weapons.Num();
+        EquipWeapon(CurrentWeaponIndex);
+    }
 }
 
 void USTUWeaponComponent::PlayAnimMontage(UAnimMontage* Animation)
@@ -195,9 +197,22 @@ void USTUWeaponComponent::Reload()
     ChangeClip();
 }
 
-void USTUWeaponComponent::OnEmptyClip()
+void USTUWeaponComponent::OnClipEmpty(ASTUBaseWeapon* AmmoEmptyWeapon)
 {
-    ChangeClip();
+    if (!AmmoEmptyWeapon) return;
+
+    if (CurrentWeapon == AmmoEmptyWeapon)
+    {
+        ChangeClip();
+    }
+    else
+    {
+        for (const auto Weapon : Weapons)
+            if (Weapon == AmmoEmptyWeapon)
+            {
+                Weapon->ChangeClip();
+            }
+    }
 }
 
 void USTUWeaponComponent::ChangeClip()
@@ -208,4 +223,57 @@ void USTUWeaponComponent::ChangeClip()
     CurrentWeapon->ChangeClip();
     ReloadAnimInProgress = true;
     PlayAnimMontage(CurrentReloadAnimMontage);
+}
+
+bool USTUWeaponComponent::GetCurrentWeaponUIData(FWeaponUIData& UIData) const
+{
+    if (CurrentWeapon)
+    {
+        UIData = CurrentWeapon->GetUIData();
+        return true;
+    }
+    return false;
+}
+
+bool USTUWeaponComponent::GetCurrentWeaponAmmoData(FAmmoData& AmmoData) const
+{
+    //if (!CurrentWeapon) return "0/0";
+    //FAmmoData AmmoData = CurrentWeapon->GetAmmoData();
+
+    //int32 Bullets = AmmoData.Bullets;
+    //int32 Clips = AmmoData.Clips;
+    //int32 Infinite = AmmoData.Infinite;
+
+    //return Infinite ? FString::FromInt(Bullets) + "/" + "ထ" : FString::FromInt(Bullets) + "/" + FString::FromInt(Clips);
+    //return Infinite ? FString::SanitizeFloat(Bullets) + "/" + "∞" : FString::SanitizeFloat(Bullets) + "/" + FString::SanitizeFloat(Clips);
+    if (CurrentWeapon)
+    {
+        AmmoData = CurrentWeapon->GetAmmoData();
+        return true;
+    }
+    return false;
+}
+
+bool USTUWeaponComponent::TryToAddAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType, int32 ClipsAmount)
+{
+    for (const auto Weapon : Weapons)
+    {
+        if (Weapon && Weapon->IsA(WeaponType))
+        {
+            return Weapon->TryToAddAmmo(ClipsAmount);
+        }
+    }
+    return false;
+}
+
+bool USTUWeaponComponent::NeedAmmo(TSubclassOf<ASTUBaseWeapon> WeaponType)
+{
+    for (const auto Weapon : Weapons)
+    {
+        if (Weapon && Weapon->IsA(WeaponType))
+        {
+            return !Weapon->IsAmmoFull();
+        }
+    }
+    return false;
 }

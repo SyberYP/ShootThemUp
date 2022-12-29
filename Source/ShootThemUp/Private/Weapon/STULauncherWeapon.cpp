@@ -31,5 +31,5 @@ void ASTULauncherWeapon::MakeShot()
         Projectile->FinishSpawning(SpawnTransform);
     }
     DecreaseAmmo();
-    // set projectile params
+    SpawnMuzzleFX();
 }
