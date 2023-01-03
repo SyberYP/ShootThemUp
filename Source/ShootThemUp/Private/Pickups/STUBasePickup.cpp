@@ -76,5 +76,6 @@ void ASTUBasePickup::GenerationRotationYaw()
 bool ASTUBasePickup::CouldBeTaken() const 
 {
     return !GetWorldTimerManager().IsTimerActive(RespawnTimerHandle);
+
 }
 

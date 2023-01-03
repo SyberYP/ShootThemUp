@@ -6,9 +6,6 @@
 #include "EnvironmentQuery/EnvQueryTest.h"
 #include "EnvQueryTest_PickupCouldBeTaken.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class SHOOTTHEMUP_API UEnvQueryTest_PickupCouldBeTaken : public UEnvQueryTest
 {
