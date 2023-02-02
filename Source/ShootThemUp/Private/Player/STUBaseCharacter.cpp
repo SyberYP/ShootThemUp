@@ -7,6 +7,8 @@
 #include "Components/STUWeaponComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/Controller.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 DEFINE_LOG_CATEGORY_STATIC(BaseCharacter_log, All, All);
 
@@ -49,16 +51,18 @@ void ASTUBaseCharacter::Tick(float DeltaTime)
 void ASTUBaseCharacter::OnDeath()
 {
     UE_LOG(BaseCharacter_log, Display, TEXT("Player %s is dead"), *GetName());
-    //PlayAnimMontage(DeathAnimMontage);
-    //GetMesh()->SetSimulatePhysics(true);
+
     GetCharacterMovement()->DisableMovement();
     SetLifeSpan(LifeSpanOfDeath);
 
     GetCapsuleComponent()->SetCollisionResponseToAllChannels(ECollisionResponse::ECR_Ignore);
     WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
 
     GetMesh()->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
     GetMesh()->SetSimulatePhysics(true);
+
+    UGameplayStatics::PlaySoundAtLocation(GetWorld(), DeathSound, GetActorLocation());
 }
 
 bool ASTUBaseCharacter::IsRunning() const
@@ -96,4 +100,18 @@ void ASTUBaseCharacter::SetPlayerColor(const FLinearColor& Color)
     if (!MaterialInst) return;
 
     MaterialInst->SetVectorParameterValue(MaterialColorName, Color);
+}
+
+void ASTUBaseCharacter::TurnOff()
+{
+    WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
+    Super::TurnOff();
+}
+
+void ASTUBaseCharacter::Reset()
+{
+    WeaponComponent->StopFire();
+    WeaponComponent->Zoom(false);
+    Super::Reset();
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "UObject/SoftObjectPtr.h"
 #include "STUCoreTypes.generated.h"
 
 // weapon
@@ -54,6 +55,7 @@ DECLARE_MULTICAST_DELEGATE_TwoParams(FOnHealthChangedSignature, float, float);
 //VFX
 
 class UNiagaraSystem;
+class USoundCue;
 
 USTRUCT(BlueprintType) 
 struct FDecalData
@@ -83,6 +85,9 @@ struct FImpactData
 
     UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "VFX")
     FDecalData DecalData;
+
+    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "VFX")
+    USoundCue* Sound;
 };
 
 USTRUCT(BlueprintType)
@@ -96,8 +101,8 @@ struct FGameData
     UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "1", ClampMax = "10"))
     int32 RoundsNum = 4;
 
-    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "300"))
-    int32 RoundTime = 10; // in seconds
+    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Game", meta = (ClampMin = "3", ClampMax = "1000"))
+    int32 RoundTime = 60; // in seconds
 
     UPROPERTY(EditDefaultsonly, BlueprintReadWrite)
     FLinearColor DefaultTeamColor = FLinearColor::Red;
@@ -119,3 +124,79 @@ enum class ESTUMatchState : uint8
 };
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnMatchStateChangedSignature, ESTUMatchState);
+
+USTRUCT(BlueprintType)
+struct FLevelData
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Game")
+    FName LevelName = NAME_None;
+
+    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Game")
+    FName LevelDisplayName = NAME_None;
+
+    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Game")
+    UTexture2D* LevelThumb;
+
+    UPROPERTY(EditDefaultsonly, BlueprintReadWrite, Category = "Game")
+    TSoftObjectPtr<UWorld> LevelReference;
+};
+
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnLevelSelectedSignature, const FLevelData&);
+
+UENUM(BlueprintType)
+enum class EBRMBotsType : uint8
+{
+    Melee = 0,
+    Range = 1,
+    Neutral = 2,
+    Merchant = 3
+};
+
+UENUM(BlueprintType)
+enum class EBRMSide : uint8
+{
+    Top = 0,
+    Bottom = 1,
+    Left = 2,
+    Right = 3,
+    Middle = 4,
+    Specific = 5
+};
+
+USTRUCT(BlueprintType)
+struct FSpawnData
+{
+    GENERATED_USTRUCT_BODY()
+
+    UPROPERTY(EditAnywhere, Category = "Game")
+    TSubclassOf<APawn> AIPawnClass;
+
+    UPROPERTY(EditAnywhere, Category = "Mob")
+    EBRMBotsType BotType = EBRMBotsType::Neutral;
+
+    UPROPERTY(EditAnywhere, Category = "Mob")
+    EBRMSide BotSide = EBRMSide::Specific;
+
+    UPROPERTY(EditAnywhere, Category = "Mob")
+    int32 TeamID = 0; // 0 for neutral
+
+    UPROPERTY(EditAnywhere, Category = "Mob")
+    int32 LifeTime = 0; // 0 for infinity
+
+    UPROPERTY(EditAnywhere, Category = "Mob")
+    int32 RespawnTime = 45; // only for neutral and merchant mobs
+
+    UPROPERTY(EditAnywhere, Category = "Mob")
+    int32 GoldGorKill = 10;
+
+    UPROPERTY(EditAnywhere, Category = "Mob")
+    bool IsSpawnActive = true;
+
+    UPROPERTY(EditAnywhere, Category = "Mob")
+    bool IsTimerSpawn = true;
+
+    UPROPERTY(EditAnywhere, Category = "Behavior")
+    TArray<AActor*> TargetPointArray;
+};

@@ -9,6 +9,7 @@
 class USTUWeaponFXComponent;
 class UNiagaraComponent;
 class UNiagaraSystem;
+class UAudioComponent;
 
 UCLASS()
 class SHOOTTHEMUP_API ASTURifleWeapon : public ASTUBaseWeapon
@@ -21,6 +22,7 @@ public:
 
     virtual void StartFire() override;
     virtual void StopFire() override;
+    virtual void Zoom(bool Enabled) override;
 
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
@@ -41,7 +43,8 @@ protected:
     UPROPERTY(VisibleAnywhere, Category = "VFX")
     USTUWeaponFXComponent* WeaponFXComponent;
 
-
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
+    float FOVZomAngle = 50.0f;
 
     virtual void BeginPlay() override;
     virtual void MakeShot() override;
@@ -53,9 +56,14 @@ private:
     UPROPERTY()
     UNiagaraComponent* MuzzleFXComponent;
 
+    UPROPERTY()
+    UAudioComponent* FireAudioComponent;
+
     void MakeDamage(const FHitResult& HitResult);
-    void InitMuzzleFX();
-    void SetMuzzleFXVisibility(bool Visible);
+    void InitFX();
+    void SetFXActive(bool IsActive);
     void SpawnTraceFX(const FVector& TraceStart, const FVector& TraceEnd);
     AController* GetController() const;
+
+    float DefaultCameraFOV = 90.0f;
 };

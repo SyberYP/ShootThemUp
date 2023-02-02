@@ -5,7 +5,14 @@
 
 USTURespawnComponent::USTURespawnComponent()
 {
-    PrimaryComponentTick.bCanEverTick = false;
+    if (IsRespawn)
+    {
+        PrimaryComponentTick.bCanEverTick = true;
+    }
+    else
+    {
+        PrimaryComponentTick.bCanEverTick = false;
+    }
 }
 
 void USTURespawnComponent::BeginPlay()
@@ -20,7 +27,7 @@ void USTURespawnComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 
 void USTURespawnComponent::Respawn(int32 RespawnTime)
 {
-    if (!GetWorld())
+    if (!GetWorld() || !IsRespawn)
         return;
     RespawnCountDown = RespawnTime;
     GetWorld()->GetTimerManager().SetTimer(RespawnTimerHandle, this, &USTURespawnComponent::RespawnTimerUpdate, 1.0f, true);

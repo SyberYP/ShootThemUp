@@ -189,3 +189,5 @@ UNiagaraComponent* ASTUBaseWeapon::SpawnMuzzleFX()
         FRotator::ZeroRotator,                             //
         EAttachLocation::SnapToTarget, true);
 }
+
+void ASTUBaseWeapon::Zoom(bool Enabled) {}

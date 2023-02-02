@@ -31,6 +31,8 @@ public:
     UPROPERTY()
     TArray<ASTUBaseWeapon*> Weapons;
 
+    void Zoom(bool Enabled);
+
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Weapon")
     TArray<FWeaponData> WeaponData;

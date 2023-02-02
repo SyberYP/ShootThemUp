@@ -20,6 +20,8 @@ public:
 
     void PlayImpactFX(const FHitResult& Hit);
 
+    FImpactData GetDefaultImfactData() const { return DefaultImpactData; }
+
 protected:
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = " VFX")
     FImpactData DefaultImpactData;

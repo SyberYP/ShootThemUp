@@ -22,6 +22,7 @@ void ASTUAIController::OnPossess(APawn* InPawn)
     Super::OnPossess(InPawn);
 
     const auto STUCharacter = Cast<ASTUAICharacter>(InPawn);
+
     if (STUCharacter)
     {
         RunBehaviorTree(STUCharacter->BehaviorTreeAsset);
@@ -35,8 +36,9 @@ void ASTUAIController::Tick(float DeltaTime)
     SetFocus(AimActor);
 }
 
-AActor* ASTUAIController::GetFocusOnActor() const 
+AActor* ASTUAIController::GetFocusOnActor() const
 {
-    if (!GetBlackboardComponent()) return nullptr;
+    if (!GetBlackboardComponent())
+        return nullptr;
     return Cast<AActor>(GetBlackboardComponent()->GetValueAsObject(FocusOnKeyName));
 }

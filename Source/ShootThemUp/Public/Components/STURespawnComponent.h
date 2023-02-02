@@ -17,12 +17,15 @@ public:
     void Respawn(int32 RespawnTime);
     int32 GetRespawnCountDown() const { return RespawnCountDown; }
     bool IsRespawnInProgress() const;
+    bool GetIsRespawn() const { return IsRespawn; }
+
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 protected:
     virtual void BeginPlay() override;
 
-public:
-    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+    UPROPERTY(EditDefaultsOnly, Category = "Game")
+    bool IsRespawn;
 
 private:
     FTimerHandle RespawnTimerHandle;

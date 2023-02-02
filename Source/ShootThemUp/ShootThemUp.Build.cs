@@ -16,8 +16,10 @@ public class ShootThemUp : ModuleRules
 			"Niagara",
 			"PhysicsCore",
 			"GameplayTasks",
-			"NavigationSystem"
-		});
+			"NavigationSystem",
+            "OnlineSubsystem",
+            "OnlineSubsystemSteam"
+        });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
@@ -35,7 +37,10 @@ public class ShootThemUp : ModuleRules
 			"ShootThemUp/Public/Weapon/AI/Tasks",
 			"ShootThemUp/Public/Weapon/AI/Services",
 			"ShootThemUp/Public/Weapon/AI/EQS",
-			"ShootThemUp/Public/Weapon/AI/Decorators"
+			"ShootThemUp/Public/Weapon/AI/Decorators",
+			"ShootThemUp/Public/Menu",
+			"ShootThemUp/Public/Menu/UI",
+			"ShootThemUp/Public/Sound"
 		});
 
 		// Uncomment if you are using Slate UI
